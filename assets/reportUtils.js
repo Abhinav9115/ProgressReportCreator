@@ -139,9 +139,11 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
+      doc.setFillColor('#ADD8E6');
+      doc.roundedRect(20, 8, 170, 40, 5, 5, 'F');
       // Set up document
-      doc.setFont('helvetica');
-      doc.setFontSize(22);
+      doc.setFont('times','bold');
+      doc.setFontSize(28);
       doc.setTextColor(0, 51, 102);
       
       // Header
@@ -155,12 +157,17 @@
       doc.text(`Primary Public School`, 105, 40, { align: 'center' });
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      doc.text(`123 Education Road, New Delhi - 110001`, 105, 45, { align: 'center' });
+      doc.text(`School Address`, 105, 45, { align: 'center' });
       
       // Add divider
       doc.setDrawColor(0, 102, 204);
       doc.setLineWidth(0.5);
       doc.line(20, 50, 190, 50);
+      doc.setDrawColor('#808080');
+      doc.line(5, 5, 5, 292);
+      doc.line(5, 5, 205, 5);
+      doc.line(205, 5, 205, 292);
+      doc.line(5, 292, 205, 292);
       
       // Student information
       doc.setFontSize(12);
