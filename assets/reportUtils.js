@@ -28,6 +28,11 @@
    * @property {number} percentage - Overall percentage
    * @property {string} overallGrade - Overall grade
    * @property {string} [remarks] - Teacher's remarks
+   * @property {Object} examTotals - Totals for each exam period
+   * @property {number} examTotals.session1 - Total marks in Session 1 across all subjects
+   * @property {number} examTotals.halfYearly - Total marks in Half Yearly across all subjects
+   * @property {number} examTotals.session2 - Total marks in Session 2 across all subjects
+   * @property {number} examTotals.final - Total marks in Final across all subjects
    */
 
   /**
@@ -87,6 +92,29 @@
   }
 
   /**
+   * Calculate total marks for each exam period across all subjects
+   * @param {Object} subjects - All subject results
+   * @returns {Object} Totals for each exam period
+   */
+  function calculateExamTotals(subjects) {
+    const examTotals = {
+      session1: 0,
+      halfYearly: 0,
+      session2: 0,
+      final: 0
+    };
+    
+    Object.values(subjects).forEach(subjectResult => {
+      examTotals.session1 += subjectResult.session1;
+      examTotals.halfYearly += subjectResult.halfYearly;
+      examTotals.session2 += subjectResult.session2;
+      examTotals.final += subjectResult.final;
+    });
+    
+    return examTotals;
+  }
+
+  /**
    * Generate complete report card data from student data
    * @param {Object} student - Student data
    * @returns {ReportCardData} Report card data
@@ -104,6 +132,9 @@
     const totalPossibleMarks = subjectCount * 100;
     const percentage = (totalMarks / totalPossibleMarks) * 100;
     
+    // Calculate exam totals
+    const examTotals = calculateExamTotals(subjectResults);
+    
     return {
       ...student,
       rollNo: student.admissionNumber,
@@ -112,7 +143,8 @@
       totalPossibleMarks,
       percentage: Math.round(percentage * 10) / 10, // Round to 1 decimal
       overallGrade: getGrade(percentage),
-      remarks: getRemarks(percentage)
+      remarks: getRemarks(percentage),
+      examTotals
     };
   }
 
@@ -228,13 +260,13 @@
         marks.grade
       ]);
       
-      // Add summary row
+      // Add summary row with exam totals
       tableData.push([
         'OVERALL',
-        '',
-        '',
-        '',
-        '',
+        reportData.examTotals.session1.toString(),
+        reportData.examTotals.halfYearly.toString(),
+        reportData.examTotals.session2.toString(),
+        reportData.examTotals.final.toString(),
         reportData.totalMarks.toString(),
         reportData.overallGrade
       ]);
@@ -287,12 +319,12 @@
       doc.text('Principal', 145, yPos + 15);
       
       // Date of issue
-      yPos += 20;
+      yPos += 40;
       doc.setFont('helvetica', 'italic');
-      doc.text(`Date of Issue: ${formatDate(new Date())}`, 20, yPos);
+      doc.text(`Date of Issue: ${formatDate(new Date())}`, 150, 287);
       
       // Save the PDF
-      doc.save(`Report_Card_${reportData.name.replace(/\s+/g, '_')}.pdf`);
+      doc.save(`Report_Card_${reportData.name.replace(/\s+/g, '_')}_${reportData.admissionNumber}.pdf`);
       
       return true;
     } catch (error) {
@@ -306,6 +338,7 @@
     generateReportCardData,
     generatePDF,
     getGrade,
-    formatDate
+    formatDate,
+    calculateExamTotals
   };
 })();
