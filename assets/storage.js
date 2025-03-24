@@ -1,5 +1,5 @@
 /**
- * Storage utilities for the Report Card Generator
+ * Storage utilities for the Report Card Generator 
  * Handles saving and loading student data from localStorage
  */
 (function() {
@@ -167,54 +167,41 @@
    * Create a sample student for testing
    * @returns {Student} Sample student
    */
-  function createSampleStudent() {
-    const defaultMarks = {
-      session1: Math.floor(Math.random() * 20) + 20,
-      halfYearly: Math.floor(Math.random() * 25) + 35,
-      session2: Math.floor(Math.random() * 20) + 25,
-      final: Math.floor(Math.random() * 25) + 40
-    };
-    
-    const generateSubjectMarks = () => ({
-      session1: Math.floor(Math.random() * 20) + 20,
-      halfYearly: Math.floor(Math.random() * 25) + 35,
-      session2: Math.floor(Math.random() * 20) + 25,
-      final: Math.floor(Math.random() * 25) + 40
+  function createSampleStudent() { 
+    const generateSubjectMarks = () => ({ 
+        session1: Math.floor(Math.random() * 11),  
+        halfYearly: Math.floor(Math.random() * 31),  
+        session2: Math.floor(Math.random() * 11),  
+        final: Math.floor(Math.random() * 51)  
     });
 
     const sampleNames = ['Rahul Sharma', 'Priya Patel', 'Amit Kumar', 'Neha Singh', 'Raj Malhotra'];
     const sampleFatherNames = ['Mr. Vikram Sharma', 'Mr. Rajesh Patel', 'Mr. Suresh Kumar', 'Mr. Harish Singh', 'Mr. Vijay Malhotra'];
     const randomIndex = Math.floor(Math.random() * sampleNames.length);
-    
-    const classLevel = String(Math.floor(Math.random() * 12) + 1);
-    const sections = ['A', 'B', 'C'];
-    const randomSection = sections[Math.floor(Math.random() * sections.length)];
 
     return {
-      id: generateUniqueId(),
-      name: sampleNames[randomIndex],
-      fatherName: sampleFatherNames[randomIndex],
-      admissionNumber: 'A' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'),
-      class: classLevel,
-      section: randomSection,
-      dateAdded: new Date().toISOString(),
-      dob: `${2010 - parseInt(classLevel)}-${Math.floor(Math.random() * 12) + 1}-${Math.floor(Math.random() * 28) + 1}`,
-      gender: Math.random() > 0.5 ? 'Male' : 'Female',
-      address: '123 School Lane, New Delhi',
-      subjects: {
-        hindi: generateSubjectMarks(),
-        english: generateSubjectMarks(),
-        mathematics: generateSubjectMarks(),
-        science: generateSubjectMarks(),
-        socialScience: generateSubjectMarks(),
-        environmentalStudies: generateSubjectMarks(),
-        homeScience: generateSubjectMarks(),
-        artMusic: generateSubjectMarks(),
-        sanskrit: generateSubjectMarks(),
-        sports: generateSubjectMarks()
-      }
+        id: generateUniqueId(),
+        name: sampleNames[randomIndex],
+        fatherName: sampleFatherNames[randomIndex],
+        admissionNumber: 'A' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'),
+        class: String(Math.floor(Math.random() * 12) + 1),
+        section: ['A', 'B', 'C'][Math.floor(Math.random() * 3)],
+        dateAdded: new Date().toISOString(),
+        subjects: {
+            hindi: generateSubjectMarks(),
+            english: generateSubjectMarks(),
+            mathematics: generateSubjectMarks(),
+            science: generateSubjectMarks(),
+            socialScience: generateSubjectMarks(),
+            environmentalStudies: generateSubjectMarks(),
+            homeScience: generateSubjectMarks(),
+            artMusic: generateSubjectMarks(),
+            sanskrit: generateSubjectMarks(),
+            sports: generateSubjectMarks()
+        }
     };
-  }
+}
+
 
   /**
    * Add a sample student to the database
