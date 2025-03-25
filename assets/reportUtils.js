@@ -68,7 +68,7 @@
     const total = getSubjectTotal(marks);
     const maxPossible = 100;
     const percentage = (total / maxPossible) * 100;
-    
+
     return {
       ...marks,
       total,
@@ -103,14 +103,14 @@
       session2: 0,
       final: 0
     };
-    
+
     Object.values(subjects).forEach(subjectResult => {
       examTotals.session1 += subjectResult.session1;
       examTotals.halfYearly += subjectResult.halfYearly;
       examTotals.session2 += subjectResult.session2;
       examTotals.final += subjectResult.final;
     });
-    
+
     return examTotals;
   }
 
@@ -125,16 +125,16 @@
     Object.entries(student.subjects).forEach(([subject, marks]) => {
       subjectResults[subject] = calculateSubjectResult(marks);
     });
-    
+
     // Calculate overall stats
     const totalMarks = Object.values(subjectResults).reduce((sum, subject) => sum + subject.total, 0);
     const subjectCount = Object.keys(student.subjects).length;
     const totalPossibleMarks = subjectCount * 100;
     const percentage = (totalMarks / totalPossibleMarks) * 100;
-    
+
     // Calculate exam totals
     const examTotals = calculateExamTotals(subjectResults);
-    
+
     return {
       ...student,
       rollNo: student.admissionNumber,
@@ -155,10 +155,10 @@
    */
   function formatDate(date) {
     if (!date) return '';
-    
+
     const d = new Date(date);
     if (isNaN(d.getTime())) return '';
-    
+
     return `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getFullYear()}`;
   }
 
@@ -172,25 +172,34 @@
       const doc = new jsPDF();
 
       doc.setFillColor('#ADD8E6');
-      doc.roundedRect(20, 8, 170, 40, 5, 5, 'F');
+      doc.roundedRect(35, 8, 140, 40, 5, 5, 'F');
+
+      // Add logo if exists
+      const schoolInfo = window.storage.getSchoolInfo();
+      if (schoolInfo.logo) {
+        const img = new Image();
+        img.src = schoolInfo.logo;
+        doc.addImage(img, 'PNG', 180, 5, 25, 25);
+      }
+
       // Set up document
-      doc.setFont('times','bold');
+      doc.setFont('times', 'bold');
       doc.setFontSize(28);
       doc.setTextColor(0, 51, 102);
-      
+
       // Header
       doc.text('STUDENT REPORT CARD', 105, 20, { align: 'center' });
       doc.setFontSize(16);
       doc.text(`Academic Year: 2024-2025`, 105, 30, { align: 'center' });
-      
+
       // School information
       doc.setFontSize(14);
       doc.setTextColor(0, 102, 204);
-      doc.text(`Primary Public School`, 105, 40, { align: 'center' });
+      doc.text(schoolInfo.name, 105, 40, { align: 'center' });
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      doc.text(`School Address`, 105, 45, { align: 'center' });
-      
+      doc.text(schoolInfo.address || 'School Address', 105, 45, { align: 'center' });
+
       // Add divider
       doc.setDrawColor(0, 102, 204);
       doc.setLineWidth(0.5);
@@ -200,36 +209,36 @@
       doc.line(5, 5, 205, 5);
       doc.line(205, 5, 205, 292);
       doc.line(5, 292, 205, 292);
-      
+
       // Student information
       doc.setFontSize(12);
       doc.setTextColor(0, 0, 0);
-      
+
       const studentInfo = [
         ['Name:', reportData.name, 'Class:', `${reportData.class} - ${reportData.section}`],
         ['Father\'s Name:', reportData.fatherName, 'Roll No:', reportData.rollNo],
         ['Admission No:', reportData.admissionNumber, 'Date of Birth:', formatDate(reportData.dob) || 'N/A']
       ];
-      
+
       let yPos = 60;
       studentInfo.forEach(row => {
         doc.setFont('helvetica', 'bold');
         doc.text(row[0], 20, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(row[1], 65, yPos);
-        
+
         doc.setFont('helvetica', 'bold');
         doc.text(row[2], 110, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(row[3], 150, yPos);
-        
+
         yPos += 8;
       });
-      
+
       // Add divider
       doc.line(20, yPos + 2, 190, yPos + 2);
       yPos += 10;
-      
+
       // Marks table
       const subjectLabels = {
         hindi: 'Hindi',
@@ -243,12 +252,12 @@
         sanskrit: 'Sanskrit',
         sports: 'Sports'
       };
-      
+
       // Table headers
       const tableHeaders = [
         ['Subject', 'Session 1', 'Half Yearly', 'Session 2', 'Final', 'Total', 'Grade']
       ];
-      
+
       // Table data
       const tableData = Object.entries(reportData.subjects).map(([subject, marks]) => [
         subjectLabels[subject] || subject,
@@ -259,7 +268,7 @@
         marks.total.toString(),
         marks.grade
       ]);
-      
+
       // Add summary row with exam totals
       tableData.push([
         'OVERALL',
@@ -270,7 +279,7 @@
         reportData.totalMarks.toString(),
         reportData.overallGrade
       ]);
-      
+
       // Generate the table
       doc.autoTable({
         head: tableHeaders,
@@ -300,32 +309,32 @@
           ]
         ]
       });
-      
+
       // Get the y position after the table
       yPos = doc.lastAutoTable.finalY + 10;
-      
+
       // Remarks section
       doc.setFont('helvetica', 'bold');
       doc.text('Remarks:', 20, yPos);
       doc.setFont('helvetica', 'normal');
       doc.text(reportData.remarks || '', 50, yPos);
-      
+
       // Signatures
       yPos += 20;
       doc.line(30, yPos + 10, 80, yPos + 10);
       doc.line(120, yPos + 10, 170, yPos + 10);
-      
+
       doc.text('Class Teacher', 55, yPos + 15);
       doc.text('Principal', 145, yPos + 15);
-      
+
       // Date of issue
       yPos += 40;
       doc.setFont('helvetica', 'italic');
       doc.text(`Date of Issue: ${formatDate(new Date())}`, 150, 287);
-      
+
       // Save the PDF
       doc.save(`Report_Card_${reportData.name.replace(/\s+/g, '_')}_${reportData.admissionNumber}.pdf`);
-      
+
       return true;
     } catch (error) {
       console.error('Error generating PDF:', error);
