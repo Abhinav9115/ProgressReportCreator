@@ -10,7 +10,7 @@
   function createNavbar() {
     const navbar = document.createElement('nav');
     navbar.className = 'bg-primary text-primary-foreground shadow-md';
-    
+
     navbar.innerHTML = `
       <div class="container mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-2">
@@ -30,16 +30,16 @@
         </div>
       </div>
     `;
-    
+
     // Add event listener for theme toggle
     const themeToggleBtn = navbar.querySelector('#theme-toggle-btn');
     themeToggleBtn.addEventListener('click', () => {
       window.themeManager.toggleTheme();
     });
-    
+
     return navbar;
   }
-  
+
   /**
    * Creates a Student Table component
    * @param {Object[]} students - Student data
@@ -47,17 +47,17 @@
    * @returns {HTMLElement} Table container
    */
   function createStudentTable(students, options = {}) {
-    const { 
-      onEdit = () => {}, 
-      onViewReport = () => {}, 
-      onDelete = () => {},
-      onAddStudent = () => {},
-      onAddSampleStudent = () => {}
+    const {
+      onEdit = () => { },
+      onViewReport = () => { },
+      onDelete = () => { },
+      onAddStudent = () => { },
+      onAddSampleStudent = () => { }
     } = options;
-    
+
     const container = document.createElement('div');
     container.className = 'animate-fade-in';
-    
+
     if (!students || students.length === 0) {
       // Empty state
       container.innerHTML = `
@@ -79,13 +79,13 @@
           </div>
         </div>
       `;
-      
+
       container.querySelector('#add-student-btn').addEventListener('click', onAddStudent);
       container.querySelector('#add-sample-student-btn').addEventListener('click', onAddSampleStudent);
-      
+
       return container;
     }
-    
+
     // Table UI
     container.innerHTML = `
       <div class="bg-card text-card-foreground rounded-lg shadow-sm overflow-hidden">
@@ -115,14 +115,14 @@
         </div>
       </div>
     `;
-    
+
     const tbody = container.querySelector('#students-tbody');
-    
+
     // Add rows for each student
     students.forEach(student => {
       const tr = document.createElement('tr');
       tr.className = 'hover:bg-muted transition-colors';
-      
+
       tr.innerHTML = `
         <td class="font-medium">${student.name}</td>
         <td>${student.class} - ${student.section}</td>
@@ -135,7 +135,7 @@
             <button class="edit-student-btn btn btn-ghost text-sm py-1">
               <i class="fa-solid fa-edit mr-1"></i> Edit
             </button>
-            
+
             <button class="delete-student-btn btn btn-ghost text-sm py-1 text-red-500">
               <i class="fa-solid fa-trash-alt mr-1"></i>
             </button>
@@ -145,7 +145,7 @@
           </div>
         </td>
       `;
-      
+
       // Add event listeners
       tr.querySelector('.view-report-btn').addEventListener('click', () => onViewReport(student));
       tr.querySelector('.edit-student-btn').addEventListener('click', () => onEdit(student));
@@ -159,17 +159,17 @@
         const reportData = window.reportUtils.generateReportCardData(student);
         window.reportUtils.generatePDF(reportData);
       });
-      
+
       tbody.appendChild(tr);
     });
-    
+
     // Add button event listeners
     container.querySelector('#add-student-btn').addEventListener('click', onAddStudent);
     container.querySelector('#add-sample-btn').addEventListener('click', onAddSampleStudent);
-    
+
     return container;
   }
-  
+
   /**
    * Creates a Student Form component
    * @param {Object|null} student - Student data (null for new student)
@@ -177,14 +177,14 @@
    * @returns {HTMLElement} Form container
    */
   function createStudentForm(student = null, options = {}) {
-    const { 
-      onBack = () => {}, 
-      onStudentAdded = () => {} 
+    const {
+      onBack = () => { },
+      onStudentAdded = () => { }
     } = options;
-    
+
     const isEditing = !!student;
     const title = isEditing ? `Edit ${student.name}` : 'Add New Student';
-    
+
     // Default empty marks structure
     const DEFAULT_MARKS = {
       session1: 0,
@@ -192,7 +192,7 @@
       session2: 0,
       final: 0
     };
-    
+
     // Default subjects if creating new student
     const DEFAULT_SUBJECTS = {
       hindi: { ...DEFAULT_MARKS },
@@ -206,10 +206,10 @@
       sanskrit: { ...DEFAULT_MARKS },
       sports: { ...DEFAULT_MARKS }
     };
-    
+
     const container = document.createElement('div');
     container.className = 'animate-fade-in';
-    
+
     container.innerHTML = `
       <form id="student-form" class="max-w-4xl mx-auto">
         <div class="bg-card text-card-foreground rounded-lg shadow-sm overflow-hidden">
@@ -220,7 +220,7 @@
               <i class="fa-solid fa-arrow-left mr-2"></i> Back
             </button>
           </div>
-          
+
           <!-- Form Fields -->
           <div class="p-6 space-y-6">
             <!-- Personal Information -->
@@ -260,7 +260,7 @@
                   <label for="class">Class <span class="text-red-500">*</span></label>
                   <select id="class" name="class" required>
                     <option value="">Select</option>
-                    ${Array.from({ length: 12 }, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
+                    ${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
                   </select>
                 </div>
                 <div>
@@ -275,11 +275,11 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Academic Information -->
             <div>
               <h3 class="text-lg font-medium mb-4">Academic Information</h3>
-              
+
               <div class="overflow-x-auto">
                 <table>
                   <thead>
@@ -296,7 +296,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Footer -->
           <div class="flex items-center justify-end px-6 py-4 border-t border-border">
             <button type="button" id="cancel-btn" class="btn btn-ghost mr-2">Cancel</button>
@@ -307,7 +307,7 @@
         </div>
       </form>
     `;
-    
+
     // Add subject rows
     const subjectLabels = {
       hindi: 'Hindi',
@@ -321,14 +321,14 @@
       sanskrit: 'Sanskrit',
       sports: 'Sports'
     };
-    
+
     const tbody = container.querySelector('#subjects-tbody');
-    
+
     Object.entries(subjectLabels).forEach(([subject, label]) => {
       const tr = document.createElement('tr');
-      
+
       const marks = student?.subjects?.[subject] || DEFAULT_SUBJECTS[subject];
-      
+
       tr.innerHTML = `
         <td class="font-medium">${label}</td>
         <td>
@@ -344,10 +344,10 @@
           <input type="number" min="0" max="50" name="${subject}.final" value="${marks.final}" class="w-16">
         </td>
       `;
-      
+
       tbody.appendChild(tr);
     });
-    
+
     // Populate form if editing
     if (isEditing) {
       container.querySelector('#name').value = student.name || '';
@@ -359,16 +359,16 @@
       container.querySelector('#class').value = student.class || '';
       container.querySelector('#section').value = student.section || '';
     }
-    
+
     // Form submission
     const form = container.querySelector('#student-form');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      
+
       // Collect form data
       const formData = new FormData(form);
       const subjects = {};
-      
+
       // Basic student data
       const studentData = {
         name: formData.get('name'),
@@ -380,7 +380,7 @@
         class: formData.get('class'),
         section: formData.get('section'),
       };
-      
+
       // Process marks for each subject
       Object.keys(subjectLabels).forEach(subject => {
         subjects[subject] = {
@@ -390,18 +390,18 @@
           final: parseInt(formData.get(`${subject}.final`) || 0)
         };
       });
-      
+
       // Complete student data
       const completeStudentData = {
         ...studentData,
         subjects,
       };
-      
+
       // If editing, preserve the ID
       if (isEditing) {
         completeStudentData.id = student.id;
         completeStudentData.dateAdded = student.dateAdded;
-        
+
         const updated = window.storage.updateStudent(completeStudentData);
         if (updated) {
           alert('Student updated successfully');
@@ -420,14 +420,14 @@
         }
       }
     });
-    
+
     // Back/cancel button handlers
     container.querySelector('#back-btn').addEventListener('click', onBack);
     container.querySelector('#cancel-btn').addEventListener('click', onBack);
-    
+
     return container;
   }
-  
+
   /**
    * Creates a Report Card component
    * @param {Object} student - Student data
@@ -435,17 +435,17 @@
    * @returns {HTMLElement} Report container
    */
   function createReportCard(student, options = {}) {
-    const { 
-      onBack = () => {}, 
-      onEdit = () => {} 
+    const {
+      onBack = () => { },
+      onEdit = () => { }
     } = options;
-    
+
     // Generate the report data
     const reportData = window.reportUtils.generateReportCardData(student);
-    
+
     const container = document.createElement('div');
     container.className = 'animate-fade-in';
-    
+
     container.innerHTML = `
       <div class="max-w-4xl mx-auto bg-card text-card-foreground rounded-lg shadow-sm overflow-hidden">
         <!-- Header -->
@@ -463,15 +463,16 @@
             </button>
           </div>
         </div>
-        
+
         <!-- Report Content -->
         <div class="p-6 space-y-6">
           <!-- School Header -->
           <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-primary">Compposite School Banglahakuti</h1>
-            <p class="text-muted-foreground">Academic Session 2024-2025</p>
+            <h1 class="text-2xl font-bold text-primary">${window.storage.getSchoolInfo().name}</h1>
+            <p class="text-muted-foreground">${window.storage.getSchoolInfo().address}</p>
+            <p class="text-muted-foreground mt-1">Academic Session 2024-2025</p>
           </div>
-          
+
           <!-- Student Information -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b border-border pb-4">
             <div>
@@ -485,7 +486,7 @@
               <p><span class="font-semibold">DOB:</span> ${window.reportUtils.formatDate(reportData.dob) || 'N/A'}</p>
             </div>
           </div>
-          
+
           <!-- Marks Table -->
           <div class="overflow-x-auto">
             <table id="marks-table">
@@ -515,12 +516,12 @@
               </tfoot>
             </table>
           </div>
-          
+
           <!-- Remarks -->
           <div class="mt-4 p-4 bg-muted rounded-md">
             <p><span class="font-semibold">Remarks:</span> ${reportData.remarks}</p>
           </div>
-          
+
           <!-- Signatures -->
           <div class="grid grid-cols-2 gap-8 mt-8 pt-4">
             <div class="text-center">
@@ -535,7 +536,7 @@
         </div>
       </div>
     `;
-    
+
     // Add marks to table
     const tbody = container.querySelector('#marks-tbody');
     const subjectLabels = {
@@ -550,10 +551,10 @@
       sanskrit: 'Sanskrit',
       sports: 'Sports'
     };
-    
+
     Object.entries(reportData.subjects).forEach(([subject, marks]) => {
       const tr = document.createElement('tr');
-      
+
       tr.innerHTML = `
         <td class="font-medium">${subjectLabels[subject] || subject}</td>
         <td>${marks.session1}</td>
@@ -563,25 +564,116 @@
         <td class="font-medium">${marks.total}</td>
         <td class="font-medium">${marks.grade}</td>
       `;
-      
+
       tbody.appendChild(tr);
     });
-    
+
     // Event listeners
     container.querySelector('#back-btn').addEventListener('click', onBack);
     container.querySelector('#edit-btn').addEventListener('click', () => onEdit(student));
     container.querySelector('#download-btn').addEventListener('click', () => {
       window.reportUtils.generatePDF(reportData);
     });
-    
+
     return container;
   }
-  
+
+
+  /**
+   * Creates a School Edit Form component
+   * @param {Object} options - Form options
+   * @returns {HTMLElement} Form container
+   */
+  function createSchoolForm(options = {}) {
+    const { onSave = () => {}, onClose = () => {} } = options;
+    const schoolInfo = window.storage.getSchoolInfo();
+
+    const container = document.createElement('div');
+    container.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    
+    container.innerHTML = `
+      <div class="bg-card text-card-foreground rounded-lg shadow-lg w-full max-w-md mx-4">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h3 class="font-heading font-semibold">Edit School Information</h3>
+          <button id="close-btn" class="text-muted-foreground hover:text-foreground">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        
+        <form id="school-form" class="p-6 space-y-4">
+          <div>
+            <label for="school-name">School Name</label>
+            <input 
+              type="text" 
+              id="school-name" 
+              value="${schoolInfo.name}"
+              class="w-full"
+              required
+            >
+          </div>
+          
+          <div>
+            <label for="school-address">School Address</label>
+            <textarea 
+              id="school-address" 
+              class="w-full h-24"
+            >${schoolInfo.address}</textarea>
+          </div>
+
+          <div>
+            <label for="school-logo">School Logo</label>
+            <input 
+              type="file" 
+              id="school-logo" 
+              accept="image/*"
+              class="w-full"
+            >
+            ${schoolInfo.logo ? '<p class="text-sm text-muted-foreground mt-1">Current logo is set</p>' : ''}
+          </div>
+          
+          <div class="flex justify-end space-x-2 pt-4">
+            <button type="button" id="cancel-btn" class="btn btn-ghost">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    container.querySelector('#school-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = container.querySelector('#school-name').value.trim();
+      const address = container.querySelector('#school-address').value.trim();
+      const logoFile = container.querySelector('#school-logo').files[0];
+      
+      let logo = window.storage.getSchoolInfo().logo;
+      if (logoFile) {
+        const reader = new FileReader();
+        logo = await new Promise(resolve => {
+          reader.onload = e => resolve(e.target.result);
+          reader.readAsDataURL(logoFile);
+        });
+      }
+      
+      window.storage.saveSchoolInfo({ name, address, logo });
+      onSave({ name, address, logo });
+    });
+
+    container.querySelector('#close-btn').addEventListener('click', onClose);
+    container.querySelector('#cancel-btn').addEventListener('click', onClose);
+
+    return container;
+  }
+
   // Export components to global scope
   window.components = {
     createNavbar,
     createStudentTable,
     createStudentForm,
-    createReportCard
+    createReportCard,
+    createSchoolForm
   };
 })();
