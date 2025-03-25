@@ -468,7 +468,7 @@
         <div class="p-6 space-y-6">
           <!-- School Header -->
           <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-primary">SUNSHINE PUBLIC SCHOOL</h1>
+            <h1 class="text-2xl font-bold text-primary">Compposite School Banglahakuti</h1>
             <p class="text-muted-foreground">Academic Session 2024-2025</p>
           </div>
           
