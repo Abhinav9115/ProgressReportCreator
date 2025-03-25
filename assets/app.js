@@ -10,10 +10,10 @@
     sortBy: 'name', // name, class, date
     students: []
   };
-  
+
   // Cache DOM references
   let appContainer;
-  
+
   /**
    * Initialize the application
    */
@@ -24,34 +24,34 @@
       console.error('App container not found');
       return;
     }
-    
+
     // Add navbar to page
     const navbar = window.components.createNavbar();
     appContainer.appendChild(navbar);
-    
+
     // Create main content container
     const mainContainer = document.createElement('div');
     mainContainer.className = 'container mx-auto px-4 py-6';
     mainContainer.id = 'main-content';
     appContainer.appendChild(mainContainer);
-    
+
     // Load students from localStorage
     state.students = window.storage.getStudents();
-    
+
     // Render the initial view
     renderView();
   }
-  
+
   /**
    * Render the current view based on application state
    */
   function renderView() {
     const mainContainer = document.getElementById('main-content');
     if (!mainContainer) return;
-    
+
     // Clear current content
     mainContainer.innerHTML = '';
-    
+
     // Render based on current view
     switch (state.view) {
       case 'home':
@@ -70,7 +70,7 @@
         renderHome(mainContainer);
     }
   }
-  
+
   /**
    * Render the home view with student listing
    * @param {HTMLElement} container - Container to render into
@@ -80,14 +80,33 @@
     const header = document.createElement('div');
     header.className = 'mb-6';
     header.innerHTML = `
-      <h1 class="text-2xl font-heading font-bold mb-2">Student Report Cards</h1>
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-2xl font-heading font-bold">Student Report Cards</h1>
+        <button id="edit-school-btn" class="btn btn-secondary text-sm">
+          <i class="fa-solid fa-school mr-2"></i> Edit School
+        </button>
+      </div>
       <p class="text-muted-foreground">Manage students and generate report cards</p>
     `;
+
+    // Add school edit button handler
+    header.querySelector('#edit-school-btn').addEventListener('click', () => {
+      const schoolForm = window.components.createSchoolForm({
+        onSave: () => {
+          document.body.removeChild(schoolForm);
+          renderView();
+        },
+        onClose: () => {
+          document.body.removeChild(schoolForm);
+        }
+      });
+      document.body.appendChild(schoolForm);
+    });
     container.appendChild(header);
-    
+
     // Sort students based on current sort selection
     const sortedStudents = window.storage.sortStudents(state.students, state.sortBy);
-    
+
     // Add sort controls if we have students
     if (sortedStudents.length > 0) {
       const sortControls = document.createElement('div');
@@ -100,29 +119,29 @@
           <button id="sort-date" class="px-3 py-1 text-sm">Date Added</button>
         </div>
       `;
-      
+
       // Highlight active sort button
       sortControls.querySelector(`#sort-${state.sortBy}`).classList.add('bg-primary', 'text-primary-foreground');
-      
+
       // Add sort event listeners
       sortControls.querySelector('#sort-name').addEventListener('click', () => {
         state.sortBy = 'name';
         renderView();
       });
-      
+
       sortControls.querySelector('#sort-class').addEventListener('click', () => {
         state.sortBy = 'class';
         renderView();
       });
-      
+
       sortControls.querySelector('#sort-date').addEventListener('click', () => {
         state.sortBy = 'date';
         renderView();
       });
-      
+
       container.appendChild(sortControls);
     }
-    
+
     // Create student table
     const studentTable = window.components.createStudentTable(sortedStudents, {
       onEdit: (student) => {
@@ -153,10 +172,10 @@
         }
       }
     });
-    
+
     container.appendChild(studentTable);
   }
-  
+
   /**
    * Render the student form for adding/editing
    * @param {HTMLElement} container - Container to render into
@@ -174,10 +193,10 @@
         renderView();
       }
     });
-    
+
     container.appendChild(form);
   }
-  
+
   /**
    * Render the report card view
    * @param {HTMLElement} container - Container to render into
@@ -188,7 +207,7 @@
       renderView();
       return;
     }
-    
+
     const reportCard = window.components.createReportCard(state.selectedStudent, {
       onBack: () => {
         state.view = 'home';
@@ -205,7 +224,7 @@
         }
       }
     });
-    
+
     // Add download button
     const downloadBtn = document.createElement('button');
     downloadBtn.className = 'download-btn ml-3';
@@ -216,14 +235,14 @@
         window.reportUtils.generatePDF(reportData);
       }
     };
-    
+
     container.appendChild(reportCard);
     const actionsSpace = reportCard.querySelector('.actions-space');
     if (actionsSpace) {
       actionsSpace.appendChild(downloadBtn);
     }
   }
-  
+
   // Initialize app when DOM is loaded
   document.addEventListener('DOMContentLoaded', init);
 })();
