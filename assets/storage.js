@@ -5,7 +5,38 @@
 (function() {
   // Constants
   const STORAGE_KEY = 'report-card-students';
-  
+  const SCHOOL_INFO_KEY = 'report-card-school-info';
+
+  /**
+   * Get school information
+   * @returns {Object} School info
+   */
+  function getSchoolInfo() {
+    try {
+      const data = localStorage.getItem(SCHOOL_INFO_KEY);
+      return data ? JSON.parse(data) : {
+        name: 'Compposite School Banglahakuti',
+        address: '',
+        logo: null
+      };
+    } catch (error) {
+      console.error('Error loading school info:', error);
+      return { name: 'Compposite School Banglahakuti', address: '' };
+    }
+  }
+
+  /**
+   * Save school information
+   * @param {Object} info - School information
+   */
+  function saveSchoolInfo(info) {
+    try {
+      localStorage.setItem(SCHOOL_INFO_KEY, JSON.stringify(info));
+    } catch (error) {
+      console.error('Error saving school info:', error);
+    }
+  }
+
   // Data types
   /**
    * @typedef {Object} SubjectMarks
@@ -82,7 +113,7 @@
       id: generateUniqueId(),
       dateAdded: new Date().toISOString()
     };
-    
+
     students.push(newStudent);
     saveStudents(students);
     return newStudent;
@@ -96,9 +127,9 @@
   function updateStudent(updatedStudent) {
     const students = getStudents();
     const index = students.findIndex(s => s.id === updatedStudent.id);
-    
+
     if (index === -1) return false;
-    
+
     students[index] = updatedStudent;
     saveStudents(students);
     return true;
@@ -112,9 +143,9 @@
   function deleteStudent(id) {
     const students = getStudents();
     const filteredStudents = students.filter(s => s.id !== id);
-    
+
     if (filteredStudents.length === students.length) return false;
-    
+
     saveStudents(filteredStudents);
     return true;
   }
@@ -145,14 +176,14 @@
    */
   function sortStudents(students, sortBy) {
     if (!students || !students.length) return [];
-    
+
     return [...students].sort((a, b) => {
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name);
         case 'class':
           // Sort by class, then by section
-          return a.class === b.class 
+          return a.class === b.class
             ? a.section.localeCompare(b.section)
             : a.class.localeCompare(b.class);
         case 'date':
@@ -167,12 +198,12 @@
    * Create a sample student for testing
    * @returns {Student} Sample student
    */
-  function createSampleStudent() { 
-    const generateSubjectMarks = () => ({ 
-        session1: Math.floor(Math.random() * 11),  
-        halfYearly: Math.floor(Math.random() * 31),  
-        session2: Math.floor(Math.random() * 11),  
-        final: Math.floor(Math.random() * 51)  
+  function createSampleStudent() {
+    const generateSubjectMarks = () => ({
+      session1: Math.floor(Math.random() * 11),
+      halfYearly: Math.floor(Math.random() * 31),
+      session2: Math.floor(Math.random() * 11),
+      final: Math.floor(Math.random() * 51)
     });
 
     const sampleNames = ['Rahul Sharma', 'Priya Patel', 'Amit Kumar', 'Neha Singh', 'Raj Malhotra'];
@@ -180,27 +211,27 @@
     const randomIndex = Math.floor(Math.random() * sampleNames.length);
 
     return {
-        id: generateUniqueId(),
-        name: sampleNames[randomIndex],
-        fatherName: sampleFatherNames[randomIndex],
-        admissionNumber: 'A' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'),
-        class: String(Math.floor(Math.random() * 12) + 1),
-        section: ['A', 'B', 'C'][Math.floor(Math.random() * 3)],
-        dateAdded: new Date().toISOString(),
-        subjects: {
-            hindi: generateSubjectMarks(),
-            english: generateSubjectMarks(),
-            mathematics: generateSubjectMarks(),
-            science: generateSubjectMarks(),
-            socialScience: generateSubjectMarks(),
-            environmentalStudies: generateSubjectMarks(),
-            homeScience: generateSubjectMarks(),
-            artMusic: generateSubjectMarks(),
-            sanskrit: generateSubjectMarks(),
-            sports: generateSubjectMarks()
-        }
+      id: generateUniqueId(),
+      name: sampleNames[randomIndex],
+      fatherName: sampleFatherNames[randomIndex],
+      admissionNumber: 'A' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'),
+      class: String(Math.floor(Math.random() * 12) + 1),
+      section: ['A', 'B', 'C'][Math.floor(Math.random() * 3)],
+      dateAdded: new Date().toISOString(),
+      subjects: {
+        hindi: generateSubjectMarks(),
+        english: generateSubjectMarks(),
+        mathematics: generateSubjectMarks(),
+        science: generateSubjectMarks(),
+        socialScience: generateSubjectMarks(),
+        environmentalStudies: generateSubjectMarks(),
+        homeScience: generateSubjectMarks(),
+        artMusic: generateSubjectMarks(),
+        sanskrit: generateSubjectMarks(),
+        sports: generateSubjectMarks()
+      }
     };
-}
+  }
 
 
   /**
@@ -221,6 +252,8 @@
     deleteStudent,
     getStudentById,
     sortStudents,
-    addSampleStudent
+    addSampleStudent,
+    getSchoolInfo,
+    saveSchoolInfo
   };
 })();
