@@ -20,7 +20,7 @@
         <div class="flex items-center space-x-4">
           <button 
             id="theme-toggle-btn"
-            class="p-2 rounded-full bg-white/90 dark:bg-slate-800 shadow-sm flex items-center justify-center hover:scale-105 transition-transform"
+            class="p-2 rounded-full bg-white/90 dark:bg-slate-800 shadow-sm flex items-center justify-center hover:scale-105 transition-transform ripple"
             title="Toggle theme"
           >
             <span id="theme-toggle-icon">
@@ -442,6 +442,7 @@
 
     // Generate the report data
     const reportData = window.reportUtils.generateReportCardData(student);
+    const schoolInfo = window.storage.getSchoolInfo();
 
     const container = document.createElement('div');
     container.className = 'animate-fade-in';
@@ -468,8 +469,16 @@
         <div class="p-6 space-y-6">
           <!-- School Header -->
           <div class="text-center mb-6">
-            <h1 class="text-2xl font-bold text-primary">${window.storage.getSchoolInfo().name}</h1>
-            <p class="text-muted-foreground">${window.storage.getSchoolInfo().address}</p>
+            <div class="flex items-center justify-center space-x-4 mb-4">
+              ${schoolInfo.logo1 ? `
+                <img src="${schoolInfo.logo1}" alt="School Logo 1" class="h-16 w-auto">
+              ` : ''}
+              <h1 class="text-2xl font-bold text-primary">${schoolInfo.name}</h1>
+              ${schoolInfo.logo2 ? `
+                <img src="${schoolInfo.logo2}" alt="School Logo 2" class="h-16 w-auto">
+              ` : ''}
+            </div>
+            <p class="text-muted-foreground">${schoolInfo.address}</p>
             <p class="text-muted-foreground mt-1">Academic Session 2024-2025</p>
           </div>
 
@@ -590,7 +599,7 @@
 
     const container = document.createElement('div');
     container.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-    
+
     container.innerHTML = `
       <div class="bg-card text-card-foreground rounded-lg shadow-lg w-full max-w-md mx-4">
         <div class="flex items-center justify-between px-6 py-4 border-b border-border">
@@ -599,7 +608,7 @@
             <i class="fa-solid fa-times"></i>
           </button>
         </div>
-        
+
         <form id="school-form" class="p-6 space-y-4">
           <div>
             <label for="school-name">School Name</label>
@@ -611,7 +620,7 @@
               required
             >
           </div>
-          
+
           <div>
             <label for="school-address">School Address</label>
             <textarea 
@@ -620,17 +629,30 @@
             >${schoolInfo.address}</textarea>
           </div>
 
-          <div>
-            <label for="school-logo">School Logo</label>
-            <input 
-              type="file" 
-              id="school-logo" 
-              accept="image/*"
-              class="w-full"
-            >
-            ${schoolInfo.logo ? '<p class="text-sm text-muted-foreground mt-1">Current logo is set</p>' : ''}
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="school-logo-1">School Logo 1 (Left)</label>
+              <input 
+                type="file" 
+                id="school-logo-1" 
+                accept="image/*"
+                class="w-full"
+              >
+              ${schoolInfo.logo1 ? '<p class="text-sm text-muted-foreground mt-1">Current logo 1 is set</p>' : ''}
+            </div>
+
+            <div>
+              <label for="school-logo-2">School Logo 2 (Right)</label>
+              <input 
+                type="file" 
+                id="school-logo-2" 
+                accept="image/*"
+                class="w-full"
+              >
+              ${schoolInfo.logo2 ? '<p class="text-sm text-muted-foreground mt-1">Current logo 2 is set</p>' : ''}
+            </div>
           </div>
-          
+
           <div class="flex justify-end space-x-2 pt-4">
             <button type="button" id="cancel-btn" class="btn btn-ghost">
               Cancel
@@ -647,19 +669,40 @@
       e.preventDefault();
       const name = container.querySelector('#school-name').value.trim();
       const address = container.querySelector('#school-address').value.trim();
-      const logoFile = container.querySelector('#school-logo').files[0];
-      
-      let logo = window.storage.getSchoolInfo().logo;
-      if (logoFile) {
+      const logo1File = container.querySelector('#school-logo-1').files[0];
+      const logo2File = container.querySelector('#school-logo-2').files[0];
+
+      let logo1 = schoolInfo.logo1;
+      let logo2 = schoolInfo.logo2;
+
+      if (logo1File) {
         const reader = new FileReader();
-        logo = await new Promise(resolve => {
+        logo1 = await new Promise(resolve => {
           reader.onload = e => resolve(e.target.result);
-          reader.readAsDataURL(logoFile);
+          reader.readAsDataURL(logo1File);
         });
       }
-      
-      window.storage.saveSchoolInfo({ name, address, logo });
-      onSave({ name, address, logo });
+
+      if (logo2File) {
+        const reader = new FileReader();
+        logo2 = await new Promise(resolve => {
+          reader.onload = e => resolve(e.target.result);
+          reader.readAsDataURL(logo2File);
+        });
+      }
+
+      window.storage.saveSchoolInfo({ 
+        name, 
+        address, 
+        logo1, 
+        logo2, 
+      });
+      onSave({ 
+        name, 
+        address, 
+        logo1, 
+        logo2, 
+      });
     });
 
     container.querySelector('#close-btn').addEventListener('click', onClose);
