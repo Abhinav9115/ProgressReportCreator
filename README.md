@@ -2,6 +2,8 @@
 
 This folder contains a standalone version of the Report Card Generator application optimized for GitHub Pages deployment. This version uses pure HTML, CSS, and JavaScript without any build tools or server requirements.
 
+Visit on https://abhinav9115.github.io/ProgressReportCreator/
+
 ## Features
 
 - Add and manage student information
