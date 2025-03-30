@@ -170,17 +170,34 @@
     try {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
+      const schoolInfo = window.storage.getSchoolInfo();
 
+      // Set white background for the PDF
+      doc.setFillColor(255, 255, 255);
+      doc.rect(
+        0, 
+        0, 
+        doc.internal.pageSize.width, 
+        doc.internal.pageSize.height, 
+        'F'
+      );
+
+      // Add school logos if they exist
+      if (schoolInfo.logo1) {
+        const logo1Img = new Image();
+        logo1Img.src = schoolInfo.logo1;
+        doc.addImage(logo1Img, 'PNG', 10, 5, 25, 25);
+      }
+
+      if (schoolInfo.logo2) {
+        const logo2Img = new Image();
+        logo2Img.src = schoolInfo.logo2;
+        doc.addImage(logo2Img, 'PNG', 180, 5, 25, 25);
+      }
+
+      // Header background
       doc.setFillColor('#ADD8E6');
       doc.roundedRect(35, 8, 140, 40, 5, 5, 'F');
-
-      // Add logo if exists
-      const schoolInfo = window.storage.getSchoolInfo();
-      if (schoolInfo.logo) {
-        const img = new Image();
-        img.src = schoolInfo.logo;
-        doc.addImage(img, 'PNG', 180, 5, 25, 25);
-      }
 
       // Set up document
       doc.setFont('times', 'bold');
@@ -293,6 +310,12 @@
         },
         alternateRowStyles: {
           fillColor: [240, 240, 240]
+        },
+        styles: {
+          cellPadding: 3,
+          fontSize: 10,
+          lineColor: [100, 100, 100],
+          lineWidth: 0.1
         },
         columnStyles: {
           0: { fontStyle: 'bold' },
