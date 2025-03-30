@@ -1,8 +1,10 @@
+
 /* Base theme variables */
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(222.2, 84%, 4.9%);
   --card: hsl(0, 0%, 100%);
+  --card-rgb: 255, 255, 255;
   --card-foreground: hsl(222.2, 84%, 4.9%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(222.2, 84%, 4.9%);
@@ -21,11 +23,11 @@
   --ring: hsl(215, 70%, 42%);
 }
 
-/* Dark mode variables */
 .dark {
   --background: hsl(222.2, 84%, 4.9%);
   --foreground: hsl(210, 40%, 98%);
   --card: hsl(222.2, 84%, 6.9%);
+  --card-rgb: 17, 24, 39;
   --card-foreground: hsl(210, 40%, 98%);
   --popover: hsl(222.2, 84%, 6.9%);
   --popover-foreground: hsl(210, 40%, 98%);
@@ -45,32 +47,78 @@
 }
 
 /* Smooth transitions */
-body, .card, button, input, select, textarea, .transition {
+* {
   transition: all 0.3s ease;
 }
 
-/* Common styles */
+body {
+  min-height: 100vh;
+  background-color: var(--background);
+  background-image: 
+    radial-gradient(circle at 20px 20px, rgba(255, 255, 255, 0.03) 2px, transparent 0),
+    radial-gradient(circle at 40px 70px, rgba(255, 255, 255, 0.03) 2px, transparent 0),
+    radial-gradient(circle at 90px 40px, rgba(255, 255, 255, 0.03) 2px, transparent 0);
+  background-size: 100px 100px;
+  color: var(--foreground);
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+.dark body {
+  background-image: 
+    radial-gradient(circle at 20px 20px, rgba(255, 255, 255, 0.07) 2px, transparent 0),
+    radial-gradient(circle at 40px 70px, rgba(255, 255, 255, 0.05) 2px, transparent 0),
+    radial-gradient(circle at 90px 40px, rgba(255, 255, 255, 0.07) 2px, transparent 0);
+}
+
+/* Card styles with enhanced shadows and transitions */
 .card {
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  background-color: var(--card);
+  border-radius: 1rem;
+  background-color: rgba(var(--card-rgb), 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--card-foreground);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.dark .card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* Button styles with animations */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  transition: all 0.2s;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform: scaleX(0);
+  background: rgba(255, 255, 255, 0.1);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.btn:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .btn-primary {
@@ -80,31 +128,15 @@ body, .card, button, input, select, textarea, .transition {
 
 .btn-primary:hover {
   filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
-.btn-secondary {
-  background-color: var(--secondary);
-  color: var(--secondary-foreground);
-}
-
-.btn-secondary:hover {
-  filter: brightness(0.95);
-}
-
-.btn-ghost {
-  background-color: transparent;
-  color: var(--foreground);
-}
-
-.btn-ghost:hover {
-  background-color: var(--secondary);
-}
-
-/* Table styles */
+/* Table styles with hover effects */
 table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  margin: 1rem 0;
 }
 
 th {
@@ -112,55 +144,138 @@ th {
   color: var(--muted-foreground);
   font-weight: 600;
   text-align: left;
-  padding: 0.75rem 1rem;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 td {
-  padding: 0.75rem 1rem;
+  padding: 1rem;
   border-top: 1px solid var(--border);
+  transition: background-color 0.2s ease;
+}
+
+tr {
+  transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 tr:hover {
   background-color: var(--muted);
+  transform: scale(1.01);
 }
 
-/* Form styles */
+/* Form styles with focus effects */
 input, select, textarea {
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid var(--border);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--border);
   background-color: var(--background);
   color: var(--foreground);
   width: 100%;
+  transition: all 0.2s ease;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 1px var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-foreground);
+  transform: translateY(-1px);
 }
 
-label {
-  display: block;
-  font-weight: 500;
-  margin-bottom: 0.25rem;
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+  }
+  
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  th, td {
+    padding: 0.75rem;
+  }
 }
 
-/* Animations for the UI */
+/* Animation keyframes */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-  from { transform: translateY(10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
+/* Ripple effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s linear;
+  top: var(--y);
+  left: var(--x);
+  transform-origin: center;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Animation classes */
 .animate-fade-in {
   animation: fadeIn 0.5s ease forwards;
 }
 
 .animate-slide-in {
   animation: slideIn 0.5s ease forwards;
+}
+
+/* Layout utilities */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
 }
