@@ -165,8 +165,10 @@
   /**
    * Generate PDF report card for a student
    * @param {ReportCardData} reportData - Report card data
+   * @param {boolean} [returnDoc=false] - Whether to return the PDF document instead of saving it
+   * @returns {jsPDF|void} The PDF document if returnDoc is true, otherwise void
    */
-  function generatePDF(reportData) {
+  function generatePDF(reportData, returnDoc = false) {
     try {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -264,10 +266,10 @@
         science: 'Science',
         socialScience: 'Social Science',
         environmentalStudies: 'Environmental Studies',
-        homeScience: 'Home Science/Agriculture',
+        homeScience: 'Home Science / Agriculture',
         artMusic: 'Art & Music',
         sanskrit: 'Sanskrit',
-        sports: 'Sports/Physical Education'
+        sports: 'Sports / Physical Education'
       };
 
       // Table headers
@@ -344,24 +346,20 @@
 
       // Signatures
       yPos += 20;
-      doc.line(30, yPos + 10, 80, yPos + 10);
-      doc.line(120, yPos + 10, 170, yPos + 10);
+      doc.setFontSize(10);
+      doc.text('Class Teacher', 40, yPos);
+      doc.text('Principal', 160, yPos);
 
-      doc.text('Class Teacher', 55, yPos + 15);
-      doc.text('Principal', 145, yPos + 15);
-
-      // Date of issue
-      yPos += 40;
-      doc.setFont('helvetica', 'italic');
-      doc.text(`Date of Issue: ${formatDate(new Date())}`, 150, 287);
+      // If returnDoc is true, return the document instead of saving it
+      if (returnDoc) {
+        return doc;
+      }
 
       // Save the PDF
-      doc.save(`Report_Card_${reportData.name.replace(/\s+/g, '_')}_${reportData.admissionNumber}.pdf`);
-
-      return true;
+      doc.save(`${reportData.name}_report_card.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      return false;
+      alert('Error generating PDF. Please try again.');
     }
   }
 
