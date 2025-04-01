@@ -264,10 +264,10 @@
         science: 'Science',
         socialScience: 'Social Science',
         environmentalStudies: 'Environmental Studies',
-        homeScience: 'Home Science',
+        homeScience: 'Home Science/Agriculture',
         artMusic: 'Art & Music',
         sanskrit: 'Sanskrit',
-        sports: 'Sports'
+        sports: 'Sports/Physical Education'
       };
 
       // Table headers
