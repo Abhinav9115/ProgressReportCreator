@@ -92,6 +92,9 @@
         <div class="flex items-center justify-between px-4 py-3 border-b border-border">
           <h2 class="font-heading font-semibold">Students</h2>
           <div class="flex gap-2">
+            <button id="download-all-pdfs-btn" class="btn btn-secondary text-sm py-1">
+              <i class="fa-solid fa-file-pdf mr-1"></i> Download All PDFs
+            </button>
             <button id="add-student-btn" class="btn btn-primary text-sm py-1">
               <i class="fa-solid fa-plus mr-1"></i> Add Student
             </button>
@@ -166,6 +169,208 @@
     // Add button event listeners
     container.querySelector('#add-student-btn').addEventListener('click', onAddStudent);
     container.querySelector('#add-sample-btn').addEventListener('click', onAddSampleStudent);
+    container.querySelector('#download-all-pdfs-btn').addEventListener('click', async () => {
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Generate PDF for each student
+        for (let i = 0; i < students.length; i++) {
+          const student = students[i];
+          
+          // Add a new page for all students except the first one
+          if (i > 0) {
+            doc.addPage();
+          }
+          
+          // Get report data
+          const reportData = window.reportUtils.generateReportCardData(student);
+          const schoolInfo = window.storage.getSchoolInfo();
+          
+          // Set white background for the page
+          doc.setFillColor(255, 255, 255);
+          doc.rect(
+            0, 
+            0, 
+            doc.internal.pageSize.width, 
+            doc.internal.pageSize.height, 
+            'F'
+          );
+          
+          // Add school logos if they exist
+          if (schoolInfo.logo1) {
+            const logo1Img = new Image();
+            logo1Img.src = schoolInfo.logo1;
+            doc.addImage(logo1Img, 'PNG', 10, 5, 25, 25);
+          }
+          
+          if (schoolInfo.logo2) {
+            const logo2Img = new Image();
+            logo2Img.src = schoolInfo.logo2;
+            doc.addImage(logo2Img, 'PNG', 180, 5, 25, 25);
+          }
+          
+          // Header background
+          doc.setFillColor('#ADD8E6');
+          doc.roundedRect(35, 8, 140, 40, 5, 5, 'F');
+          
+          // Set up document
+          doc.setFont('times', 'bold');
+          doc.setFontSize(28);
+          doc.setTextColor(0, 51, 102);
+          
+          // Header
+          doc.text('STUDENT REPORT CARD', 105, 20, { align: 'center' });
+          doc.setFontSize(16);
+          doc.text(`Academic Year: 2024-2025`, 105, 30, { align: 'center' });
+          
+          // School information
+          doc.setFontSize(14);
+          doc.setTextColor(0, 102, 204);
+          doc.text(schoolInfo.name, 105, 40, { align: 'center' });
+          doc.setFontSize(10);
+          doc.setTextColor(0, 0, 0);
+          doc.text(schoolInfo.address || 'School Address', 105, 45, { align: 'center' });
+          
+          // Add divider
+          doc.setDrawColor(0, 102, 204);
+          doc.setLineWidth(0.5);
+          doc.line(20, 50, 190, 50);
+          doc.setDrawColor('#808080');
+          doc.line(5, 5, 5, 292);
+          doc.line(5, 5, 205, 5);
+          doc.line(205, 5, 205, 292);
+          doc.line(5, 292, 205, 292);
+          
+          // Student information
+          doc.setFontSize(12);
+          doc.setTextColor(0, 0, 0);
+          
+          const studentInfo = [
+            ['Name:', reportData.name, 'Class:', `${reportData.class} - ${reportData.section}`],
+            ['Father\'s Name:', reportData.fatherName, 'Roll No:', reportData.rollNo],
+            ['Admission No:', reportData.admissionNumber, 'Date of Birth:', window.reportUtils.formatDate(reportData.dob) || 'N/A']
+          ];
+          
+          let yPos = 60;
+          studentInfo.forEach(row => {
+            doc.setFont('helvetica', 'bold');
+            doc.text(row[0], 20, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(row[1], 65, yPos);
+            
+            doc.setFont('helvetica', 'bold');
+            doc.text(row[2], 110, yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.text(row[3], 150, yPos);
+            
+            yPos += 8;
+          });
+          
+          // Add divider
+          doc.line(20, yPos + 2, 190, yPos + 2);
+          yPos += 10;
+          
+          // Marks table
+          const subjectLabels = {
+            hindi: 'Hindi',
+            english: 'English',
+            mathematics: 'Mathematics',
+            science: 'Science',
+            socialScience: 'Social Science',
+            environmentalStudies: 'Environmental Studies',
+            homeScience: 'Home Science / Agriculture',
+            artMusic: 'Art & Music',
+            sanskrit: 'Sanskrit',
+            sports: 'Sports / Physical Education'
+          };
+          
+          // Table headers
+          const tableHeaders = [
+            ['Subject', 'Session 1', 'Half Yearly', 'Session 2', 'Final', 'Total', 'Grade']
+          ];
+          
+          // Table data
+          const tableData = Object.entries(reportData.subjects).map(([subject, marks]) => [
+            subjectLabels[subject] || subject,
+            marks.session1.toString(),
+            marks.halfYearly.toString(),
+            marks.session2.toString(),
+            marks.final.toString(),
+            marks.total.toString(),
+            marks.grade
+          ]);
+          
+          // Add summary row with exam totals
+          tableData.push([
+            'OVERALL',
+            reportData.examTotals.session1.toString(),
+            reportData.examTotals.halfYearly.toString(),
+            reportData.examTotals.session2.toString(),
+            reportData.examTotals.final.toString(),
+            reportData.totalMarks.toString(),
+            reportData.overallGrade
+          ]);
+          
+          // Generate the table
+          doc.autoTable({
+            head: tableHeaders,
+            body: tableData,
+            startY: yPos,
+            theme: 'grid',
+            headStyles: {
+              fillColor: [0, 102, 204],
+              textColor: [255, 255, 255],
+              fontStyle: 'bold'
+            },
+            alternateRowStyles: {
+              fillColor: [240, 240, 240]
+            },
+            styles: {
+              cellPadding: 3,
+              fontSize: 10,
+              lineColor: [100, 100, 100],
+              lineWidth: 0.1
+            },
+            columnStyles: {
+              0: { fontStyle: 'bold' },
+              5: { fontStyle: 'bold' },
+              6: { fontStyle: 'bold' }
+            },
+            foot: [
+              [
+                {
+                  content: `Percentage: ${reportData.percentage}%`,
+                  colSpan: 7,
+                  styles: { fontStyle: 'bold', halign: 'right' }
+                }
+              ]
+            ]
+          });
+          
+          // Get the y position after the table
+          yPos = doc.lastAutoTable.finalY + 10;
+          
+          // Remarks section
+          doc.setFont('helvetica', 'bold');
+          doc.text('Remarks:', 20, yPos);
+          doc.setFont('helvetica', 'normal');
+          doc.text(reportData.remarks || '', 50, yPos);
+          
+          // Signatures
+          yPos += 20;
+          doc.setFontSize(10);
+          doc.text('Class Teacher', 40, yPos);
+          doc.text('Principal', 160, yPos);
+        }
+        
+        // Save the merged PDF
+        doc.save('all_report_cards.pdf');
+      } catch (error) {
+        console.error('Error generating merged PDF:', error);
+        alert('Error generating merged PDF. Please try again.');
+      }
+    });
 
     return container;
   }
