@@ -316,10 +316,10 @@
       science: 'Science',
       socialScience: 'Social Science',
       environmentalStudies: 'Environmental Studies',
-      homeScience: 'Home Science',
+      homeScience: 'Home Science / Agriculture',
       artMusic: 'Art & Music',
       sanskrit: 'Sanskrit',
-      sports: 'Sports'
+      sports: 'Sports / Physical Education'
     };
 
     const tbody = container.querySelector('#subjects-tbody');
@@ -555,10 +555,10 @@
       science: 'Science',
       socialScience: 'Social Science',
       environmentalStudies: 'Environmental Studies',
-      homeScience: 'Home Science',
+      homeScience: 'Home Science / Agriculture',
       artMusic: 'Art & Music',
       sanskrit: 'Sanskrit',
-      sports: 'Sports'
+      sports: 'Sports / Physical Education'
     };
 
     Object.entries(reportData.subjects).forEach(([subject, marks]) => {
