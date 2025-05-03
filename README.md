@@ -14,23 +14,7 @@ Visit on https://abhinav9115.github.io/ProgressReportCreator/
 - Sample student generation for testing
 - Data persistence through LocalStorage
 
-## How to Deploy to GitHub Pages
 
-1. **Create a New Repository**
-   - Go to GitHub and create a new repository
-
-2. **Upload All Files**
-   - Upload all the files in this folder to the repository
-   - Ensure the structure is maintained with the assets folder containing all JavaScript and CSS files
-
-3. **Enable GitHub Pages**
-   - Go to the repository settings
-   - Scroll down to the GitHub Pages section
-   - Select the main branch as the source
-   - Click Save
-
-4. **Access Your Deployed Site**
-   - After a few minutes, your site will be available at `https://[your-username].github.io/[repository-name]/`
 
 ## Technical Notes
 
